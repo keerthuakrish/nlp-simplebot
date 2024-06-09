@@ -2,12 +2,29 @@ import tkinter.scrolledtext as tks #creates a scrollable text window
 
 from datetime import datetime
 from tkinter import *
+import os
+from openai import OpenAI
 
+# Initialize the OpenAI client with the API key
+client = OpenAI(api_key=os.getenv('OPENAI_KEY'))
 
+# WRITE YOUR CODE HERE
 # Generating response
 def get_bot_response(user_input):
-   
-  return bot_response
+    prompt = f"Please provide a response to the following user input: '{user_input}'"
+
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo-instruct",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=150,
+        n=1,
+        stop=None,
+        temperature=0.5,
+    )
+
+    bot_response = response.choices[0].text.strip()
+    return bot_response
+
 
 
 def create_and_insert_user_frame(user_input):
@@ -67,7 +84,7 @@ def send(event):
 
 baseWindow = Tk()
 baseWindow.title("The Simple Bot")
-baseWindow.geometry("500x300")
+baseWindow.geometry("500x250")
 
 chatWindow = tks.ScrolledText(baseWindow, font="Arial")
 chatWindow.tag_configure('tag-left', justify='left')
@@ -87,8 +104,8 @@ baseWindow.bind('<Return>', send)
 
 userEntryBox = Text(baseWindow, bd=1, bg="white", width=38, font="Arial")
 
-chatWindow.place(x=1, y=1, height=270, width=500)
-userEntryBox.place(x=3, y=272, height=27)
-sendButton.place(x=430, y=270)
+chatWindow.place(x=1, y=1, height=200, width=500)
+userEntryBox.place(x=3, y=202, height=27)
+sendButton.place(x=430, y=200)
 
 baseWindow.mainloop()    
